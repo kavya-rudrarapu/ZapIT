@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: phi-tools
+Version: 0.0.7
+Summary: A collections of often use functions
+Home-page: https://github.com/re0phimes/phi-s_ultis
+Author: phimes
+Author-email: phimes@163.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# phi-s_ultis
+a method collections that use often
