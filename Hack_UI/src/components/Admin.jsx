@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 
 const API_URL = "http://localhost:5001/api/tickets";
 const UPDATE_URL = "http://localhost:5001/api/update-ticket-status";
+const PRIORITIZE_URL = "http://localhost:5001/api/prioritize-unsolved-tickets";
 
 const Admin = () => {
   const [tickets, setTickets] = useState([]);
@@ -28,33 +29,32 @@ const Admin = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(API_URL);
-        setTickets(res.data);
-      } catch (err) {
-        setError("Failed to load tickets");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTickets = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(API_URL);
+      setTickets(res.data);
+    } catch (err) {
+      setError("Failed to load tickets");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTickets();
   }, []);
 
   const handleStatusChange = async (ticketId, newStatus) => {
     try {
       const token = localStorage.getItem("token");
-       await axios.patch(`${UPDATE_URL}/${ticketId}`, {
-        status: newStatus,
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.patch(
+        `${UPDATE_URL}/${ticketId}`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      // Update local state
       setTickets((prev) =>
         prev.map((ticket) =>
           ticket.ticket_id === ticketId
@@ -72,7 +72,20 @@ const Admin = () => {
     navigate("/adminLogin");
   };
 
-  
+  const handlePrioritizeTickets = async () => {
+    try {
+      setLoading(true);
+      await axios.post(PRIORITIZE_URL);
+      alert("Priorities assigned to unsolved tickets!");
+      await fetchTickets(); // Refresh the tickets list
+    } catch (err) {
+      console.error("Failed to prioritize tickets", err);
+      alert("Error prioritizing tickets.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const sortedTickets = [...tickets].sort((a, b) => {
     const priority = { open: 0, reopen: 1, reopened: 1, resolved: 2, close: 3 };
     return (priority[a.status] ?? 99) - (priority[b.status] ?? 99);
@@ -80,11 +93,16 @@ const Admin = () => {
 
   return (
     <Container maxWidth="lg" sx={{ pt: 6 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
         <Typography variant="h4">All Tickets</Typography>
-        <Button variant="outlined" color="error" onClick={handleLogout}>
-          Logout
-        </Button>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button variant="contained" color="primary" onClick={handlePrioritizeTickets}>
+            Prioritize Tickets
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Box>
       </Box>
 
       {loading ? (
@@ -96,20 +114,20 @@ const Admin = () => {
       ) : (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <TableContainer
-                          component={Paper}
-                          sx={{
-                              borderRadius: 3,
-                              backdropFilter: "blur(10px)",
-                              backgroundColor: "rgba(255, 255, 255, 0.6)",
-                              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-                              color: "#2c3e50",
-                          }}
-                    >
+            component={Paper}
+            sx={{
+              borderRadius: 3,
+              backdropFilter: "blur(10px)",
+              backgroundColor: "rgba(255, 255, 255, 0.6)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+              color: "#2c3e50",
+            }}
+          >
             <Table>
-              <TableHead  sx={{backgroundColor: "#2c3e50",opacity: 0.9}}>
+              <TableHead sx={{ backgroundColor: "#2c3e50", opacity: 0.9 }}>
                 <TableRow>
                   <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Ticket ID</TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Issue Title</TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Title</TableCell>
                   <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>User Name</TableCell>
                   <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Status</TableCell>
                   <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Priority</TableCell>
@@ -126,9 +144,7 @@ const Admin = () => {
                       {["open", "reopen", "reopened"].includes(ticket.status) ? (
                         <Select
                           value={ticket.status}
-                          onChange={(e) =>
-                            handleStatusChange(ticket.ticket_id, e.target.value)
-                          }
+                          onChange={(e) => handleStatusChange(ticket.ticket_id, e.target.value)}
                           size="small"
                           variant="standard"
                         >
@@ -142,7 +158,21 @@ const Admin = () => {
                       )}
                     </TableCell>
                     <TableCell>
-                      {ticket.priority}
+                      <Box
+                        sx={{
+                          color:
+                            ticket.priority === "high"
+                              ? "red"
+                              : ticket.priority === "medium"
+                              ? "orange"
+                              : ticket.priority === "low"
+                              ? "green"
+                              : "black",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {ticket.priority}
+                      </Box>
                     </TableCell>
                     <TableCell>
                       {ticket.created_at

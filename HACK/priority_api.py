@@ -38,13 +38,13 @@ def prioritize_unsolved_tickets():
             response = priority_agent.run(prompt)
             priority = response.content.strip().lower()
  
-            if priority not in ["critical", "high", "medium", "low"]:
-                priority = "unassigned"
+            if priority not in [ "high", "medium", "low"]:
+                priority = "low"
  
             ticket.priority = priority
             updated.append({
                 "ticket_id": ticket.ticket_id,
-                "issue_description": ticket.issue_description,
+                "issue_title": ticket.issue_title,
                 "assigned_priority": priority
             })
  

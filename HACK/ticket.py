@@ -22,10 +22,9 @@ web_search_agent = Agent(
     description="Agent that crawls websites, checks relevant content, and writes the best article",
     tools=[DuckDuckGo()],
     instructions=[
-        "Always use the tool provided whether relevant or not, "
-        "then start with answering the user query. "
-        "If the query is related to providing some acceses or tools or any equipment then respond with 'I am unable to find the answer'. "
-        "If still not relevant respond with 'I am unable to find the answer'."
+        "Always use the DuckDuckGo tool to search for relevant information. "
+        "If the issue is clearly related to granting internal access, physical tools, or admin-only capabilities, then respond with 'I am unable to find the answer'. "
+        "Otherwise, try to resolve the issue based on search results or your general knowledge."
     ],
     model=Gemini(model="gemini-1.5-flash"),
     markdown=True,

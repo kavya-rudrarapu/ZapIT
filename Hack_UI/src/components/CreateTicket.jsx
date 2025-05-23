@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 
 export default function CreateTicket() {
-  const [response, setResponse] = useState("Hi, how can I help you?");
+  const [response, setResponse] = useState("");
   const [issueTitle, setIssueTitle] = useState("");
   const [posting, setPosting] = useState(false);
 
@@ -93,7 +93,7 @@ export default function CreateTicket() {
             </Box>
           </Card>
         </Box>
-        <Box sx={{ mt: 2, textAlign: "center" }}>
+        {response && (<Box sx={{ mt: 2, textAlign: "center" }}>
           <Card
             sx={{ padding: 2, backgroundColor: "#f0f0f0", borderRadius: 2 }}
           >
@@ -104,7 +104,7 @@ export default function CreateTicket() {
               {response}
             </Typography>
           </Card>
-        </Box>
+        </Box>)} 
       </motion.div>
     </Container>
   );

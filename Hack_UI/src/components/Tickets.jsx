@@ -94,9 +94,9 @@ const handleStatusChange = async (ticketId, newStatus) => {
             <TableHead sx={{backgroundColor: "#2c3e50",opacity: 0.9}}>
               <TableRow >
                 <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Ticket ID</strong></TableCell>
-                <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Issue Title</strong></TableCell>
+                <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Title</strong></TableCell>
                 <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Status</strong></TableCell>
-                <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Priority</strong></TableCell>
+                {/* <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Priority</strong></TableCell> */}
                 <TableCell  sx={{ color: "#fff", fontWeight: "bold" }}><strong>Created At</strong></TableCell>
               </TableRow>
             </TableHead>
@@ -123,9 +123,11 @@ const handleStatusChange = async (ticketId, newStatus) => {
                       <MenuItem value="resolved"  disabled={ticket.status === "resolved"} style={{display:ticket.status==="resolved"?"block":"none"}}>Resolved</MenuItem>
                     </Select>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
+                    <Box sx={{color:ticket.priority === "high"? "red": ticket.priority === "medium"? "orange": ticket.priority === "low"?"green":"black",fontWeight:"bold"}}>
                     {ticket.priority}
-                    </TableCell>
+                    </Box>
+                    </TableCell> */}
                   <TableCell>
                     {new Date(ticket.created_at).toLocaleString()}
                     </TableCell>
